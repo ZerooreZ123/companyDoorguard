@@ -1,0 +1,207 @@
+<template>
+  <div class="wrap">
+    <div class="tel flex-between">
+      <span>手机号</span>
+      <span>{{phone}}</span>
+    </div>
+    <div class="group">
+      <div class="item flex-between">
+        <span>姓名</span>
+        <input class="name" type="text" placeholder="请输入您的真实姓名">
+      </div>
+      <div class="item flex-between" @click="setSex">
+        <span>性别</span>
+        <span class="flex-center" :class="sex?'deepColor':'setColor'" @click="setSex">{{sex|setStatus}}
+          <img class="icon" :src="require('@/assets/img/icon/go.png')" alt="">
+        </span>
+      </div>
+    </div>
+    <div class="group lie">
+      <div class="item flex-between">
+        <span>人脸识别</span>
+        <span class="flex-center" :class="faceSet? 'deepColor':'setColor' ">{{faceSet|setStatus}}
+          <img class="icon " :src="require( '@/assets/img/icon/go.png') " alt=" ">
+        </span>
+      </div>
+      <input @change="getBase64 " class="upload " ref="files" type="file" multiple="multiple " />
+    </div>
+    <div class="buttonBox flex-center">
+      <div class="buttonTint flex-center">提交</div>
+    </div>
+  </div>
+</template>
+<script>
+import NetRequest from "@/utils/NetRequest";
+export default {
+  data() {
+    return {
+      name: "",
+      sex: "",
+      phone: "18617015565",
+      // type: JSON.parse(window.sessionStorage.getItem("info")).type,
+      // phone: JSON.parse(window.sessionStorage.getItem("info")).phone,
+      faceSet: ""
+    };
+  },
+  filters: {
+    setStatus(value) {
+      return value ? value.toString() : "设置";
+    }
+  },
+  mounted() {
+    // this.info();
+    document.querySelector("title").innerText = "录入资料";
+  },
+  methods: {
+    getBase64(event) {
+      var data = event.target.files;
+      var file = [];
+      for (var i in data) {
+        if (data.hasOwnProperty(i)) {
+          file.push(data[i]);
+        }
+      }
+      file.forEach(el => {
+        if (window.FileReader) {
+          var fr = new FileReader();
+          fr.onloadend = e => {
+            var result = e.target.result.split(",");
+            this.uploadFace(result[1]);
+          };
+          fr.readAsDataURL(el);
+        } else {
+          alert("NO FileReader!");
+        }
+      });
+    },
+    async uploadFace(stringBase64) {
+      const Id = JSON.parse(window.sessionStorage.getItem("info")).id;
+      const userType = JSON.parse(window.sessionStorage.getItem("info")).type;
+      const data = await NetRequest.postUrl("/uploadFace", { image: stringBase64, id: Id, type: userType });
+      if (JSON.stringify(data) === "{}") {
+        this.info();
+      }
+    },
+    setSex() {
+      this.$router.push({ path: "/settingSex" });
+    }
+    // async info() {
+    //   const userId = JSON.parse(window.sessionStorage.getItem("info")).id;
+    //   const type = JSON.parse(window.sessionStorage.getItem("info")).type;
+    //   if (type === "0") {
+    //     const data = await NetRequest.post("getAdminInfo", { id: userId });
+    //     this.name = data[0].name;
+    //     this.sex = data[0].sex;
+    //     window.sessionStorage.setItem("userSex", this.sex);
+    //     if (data[0].faceSet) {
+    //       this.faceSet = "已设置";
+    //     } else {
+    //       this.faceSet = "设置";
+    //     }
+    //   } else {
+    //     const data = await NetRequest.post("getTenantInfo", { id: userId });
+    //     this.name = data[0].name;
+    //     this.sex = data[0].sex;
+    //     window.sessionStorage.setItem("userSex", this.sex);
+    //     window.sessionStorage.setItem("passWord", data[0].password);
+    //     window.userSex = data[0].sex;
+    //     if (data[0].faceSet) {
+    //       this.faceSet = "已设置";
+    //     } else {
+    //       this.faceSet = "设置";
+    //     }
+    //   }
+    // }
+  }
+};
+</script>
+
+<style scoped>
+.wrap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #f3f3f3;
+  font-size: 28px;
+}
+.tel {
+  padding: 0 30px;
+  background: #f3f5f7;
+  height: 90px;
+  border-bottom: 2px solid #f6f6f6;
+}
+.group {
+  padding: 0 30px;
+  margin-bottom: 20px;
+  background: #fff;
+  border-top: 2px solid #f6f6f6;
+  border-bottom: 2px solid #f6f6f6;
+}
+.lie {
+  position: relative;
+}
+.upload {
+  z-index: 220;
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: transparent;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+}
+.item {
+  height: 90px;
+  border-bottom: 1px solid #f6f6f6;
+}
+.icon {
+  width: 16px;
+  height: 24px;
+  margin-left: 14px;
+}
+.grayColor {
+  color: #999;
+}
+.name {
+  width: 70%;
+  border: 0;
+  outline: none;
+  background: #fff;
+  text-align: right;
+  color: #000;
+}
+.name::-webkit-input-placeholder {
+  color: #c6c6c6;
+}
+.buttonBox {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+}
+.button,
+.buttonTint {
+  width: 83.2%;
+  height: 78px;
+  font-size: 30px;
+  background: #f3f3f3;
+  border-radius: 4px;
+}
+.button {
+  color: #65a2e6;
+  border: 2px solid #65a2e6;
+}
+.buttonTint {
+  color: #c8daef;
+  border: 2px solid #c8daef;
+}
+.setColor {
+  color: #b3b3b3;
+}
+.deepColor {
+  color: #000;
+}
+</style>
