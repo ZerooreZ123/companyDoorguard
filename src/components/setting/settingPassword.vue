@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="floor flex-between">
       <span>房号</span>
-      <span class="num">{{floor}}</span>
+      <span class="num">{{loc}}</span>
     </div>
     <div class="setting ">
       <div class="item flex-between">
@@ -34,14 +34,14 @@ export default {
   },
   data() {
     return {
-      devicePwd: window.sessionStorage.getItem("passWord"),
+      devicePwd: window.floor.passWord,
       oldCode: "",
       newCode: "",
       confirmCode: "",
       isDisplay: false,
       message: {},
-      roomId: JSON.parse(window.sessionStorage.getItem("info")).room,
-      floor: JSON.parse(window.sessionStorage.getItem("info")).address
+      roomId: window.floor.room,
+      loc: window.floor.loc
     };
   },
   mounted() {

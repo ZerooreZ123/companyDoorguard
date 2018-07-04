@@ -51,9 +51,8 @@ export default {
     },
     async getScanCode(codeType) {
       const temp = window.sessionStorage.getItem("info");
-      const userBuilding = JSON.parse(temp).building;
       const userRoom = JSON.parse(temp).room;
-      const data = await NetRequest.postUrl("/scanCode", { id: codeType === "0" ? userBuilding : userRoom, type: codeType });
+      const data = await NetRequest.postUrl("/scanCode", { id: userRoom, type: codeType });
       this.qrString = data.code;
     }
   }

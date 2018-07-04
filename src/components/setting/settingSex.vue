@@ -43,7 +43,7 @@ export default {
         if (this.type === "0") {
           await NetRequest.post("updateAdminInfo", { name: this.name, sex: this.sexBox[this.sexSective], id: this.userId });
         } else {
-          await NetRequest.post("updateTenantInfo", { name: this.name, sex: this.sexBox[this.sexSective], id: this.userId });
+          await NetRequest.post("updateEmployeeInfo", { name: this.name, sex: this.sexBox[this.sexSective], id: this.userId });
         }
         window.history.go(-1);
       }
@@ -53,7 +53,7 @@ export default {
         const data = await NetRequest.post("getAdminInfo", { id: this.userId });
         this.name = data[0].name;
       } else {
-        const data = await NetRequest.post("getTenantInfo", { id: this.userId });
+        const data = await NetRequest.post("getEmployeeInfo", { id: this.userId });
         this.name = data[0].name;
       }
     }

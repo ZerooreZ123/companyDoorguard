@@ -3,47 +3,43 @@
     <div class="content" v-for="(item,index) in dataResult" :key="index">
       <div class="flex-between single">
         <div class="place flex-start">
-          <div class="adress">{{item.address}}</div>
-          <div class="park">{{item.place}}</div>
+          <div class="adress">{{item.loc}}</div>
+          <div class="park">{{item.areaName}}</div>
         </div>
         <div>
-          <span class="editPassword">修改密码</span>
-          <span class="openDoor">开门</span>
+          <span :class="item.password?'editPassword':'lockPassword'" @click="setPassword(item.password,item.id,item.loc)">修改密码</span>
+          <span class="openDoor" @click="open(item.id,item.password)">开门</span>
         </div>
       </div>
     </div>
     <div class="managerCenter flex-center" @click="onManagement">管理中心</div>
     <div class="ball flex-center" @click="onScavenging">分享</div>
     <div class="buttonBox flex-center">
-      <div class="button flex-center">扫码开门</div>
+      <div class="button flex-center" @click="onScavenging">扫码开门</div>
     </div>
+    <tip-mes :msg="message" v-if="isDisplay"></tip-mes>
   </div>
 </template>
 
 <script>
+import NetRequest from "@/utils/NetRequest";
+import TipMes from "@/components/common/tipMes";
 export default {
+  components: {
+    TipMes
+  },
   data() {
     return {
-      dataResult: [
-        {
-          address: "9栋301西门",
-          place: "创意中央"
-        },
-        {
-          address: "9栋302东门",
-          place: "创意中央"
-        },
-        {
-          address: "9栋303南门",
-          place: "创意中央"
-        }
-      ],
+      message: {},
+      isDisplay: false,
+      dataResult: [],
       address: JSON.parse(window.sessionStorage.getItem("info")).address,
       room: JSON.parse(window.sessionStorage.getItem("info")).room
     };
   },
   mounted() {
     document.querySelector("title").innerText = "企业门禁";
+    this.getCompanyInfo();
   },
   methods: {
     onManagement() {
@@ -55,6 +51,36 @@ export default {
       this.$router.push({
         path: "/scavenging"
       });
+    },
+    setPassword(val, num, address) {
+      if (val) {
+        this.$router.push({ path: "/settingPassword" });
+        window.floor = { passWord: val, room: num, loc: address };
+      } else {
+        return false;
+      }
+    },
+    async getCompanyInfo() {
+      const data = await NetRequest.post("getRoomsInfo", { room: this.room });
+      this.dataResult = data;
+    },
+    async open(id, state) {
+      if (!state) {
+        this.isDisplay = true;
+        this.message = { name: "暂无法开锁", isShow: false };
+        setTimeout(() => {
+          this.isDisplay = false;
+        }, 1.5e3);
+      } else {
+        const data = await NetRequest.postUrl("/openDoor", { room: id });
+        if (JSON.stringify(data) === "{}") {
+          this.isDisplay = true;
+          this.message = { name: "开锁成功", isShow: false };
+          setTimeout(() => {
+            this.isDisplay = false;
+          }, 1.5e3);
+        }
+      }
     }
   }
 };
@@ -82,11 +108,13 @@ export default {
   font-size: 34px;
   color: #000;
   font-weight: 500;
+  margin-bottom: 10px;
 }
 .park {
   color: #777;
 }
 .editPassword,
+.lockPassword,
 .openDoor {
   display: inline-block;
   width: 140px;
@@ -95,8 +123,12 @@ export default {
   padding: 10px 0;
 }
 .editPassword {
-  border: 2px solid #e2e2e2;
+  border: 2px solid #bbb;
   color: #bbb;
+}
+.lockPassword {
+  border: 2px solid #e1e1e1;
+  color: #e1e1e1;
 }
 .openDoor {
   border: 2px solid #c1daf6;

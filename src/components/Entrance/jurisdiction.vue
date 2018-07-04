@@ -28,18 +28,19 @@ export default {
   },
   methods: {
     async jump() {
+      // const data = await NetRequest.post("userLogin", { phone: 15015010422 });
       const data = await NetRequest.post("userLogin", { phone: 18617015565 });
       if (data.length > 0) {
-        if (data[0].type === "1") {
+        if (data[0].type === "0") {
           this.$router.replace({
             path: "/home"
           });
+        } else {
+          this.$router.replace({
+            path: "/scavenging"
+          });
         }
         window.sessionStorage.setItem("info", JSON.stringify(data[0]));
-      } else {
-        this.$router.replace({
-          path: "/settingInfo"
-        });
       }
     }
   }

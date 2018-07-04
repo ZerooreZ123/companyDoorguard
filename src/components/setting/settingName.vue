@@ -59,7 +59,7 @@ export default {
       if (this.type === "0") {
         await NetRequest.post("updateAdminInfo", { name: this.inputText, sex: this.sex, id: this.userId });
       } else {
-        await NetRequest.post("updateTenantInfo", { name: this.inputText, sex: this.sex, id: this.userId });
+        await NetRequest.post("updateEmployeeInfo", { name: this.inputText, sex: this.sex, id: this.userId });
       }
       this.message = { name: "设置成功", isShow: false };
       setTimeout(() => {
@@ -73,7 +73,7 @@ export default {
         const data = await NetRequest.post("getAdminInfo", { id: this.userId });
         this.sex = data[0].sex;
       } else {
-        const data = await NetRequest.post("getTenantInfo", { id: this.userId });
+        const data = await NetRequest.post("getEmployeeInfo", { id: this.userId });
         this.sex = data[0].sex;
       }
     }

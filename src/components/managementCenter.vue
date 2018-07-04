@@ -27,12 +27,6 @@
       </div>
       <input @change="getBase64 " class="upload " ref="files" type="file" multiple="multiple " />
     </div>
-    <div v-if="type==='0' ?false:true " class="group " @click="setPassword ">
-      <div class="item flex-between ">
-        <span class="tag">修改设置密码</span>
-        <img class="icon " :src="require( '@/assets/img/icon/go.png') " alt=" ">
-      </div>
-    </div>
   </div>
 </template>
 <script>
@@ -92,9 +86,6 @@ export default {
     setSex() {
       this.$router.push({ path: "/settingSex" });
     },
-    setPassword() {
-      this.$router.push({ path: "/settingPassword" });
-    },
     async info() {
       const userId = JSON.parse(window.sessionStorage.getItem("info")).id;
       const type = JSON.parse(window.sessionStorage.getItem("info")).type;
@@ -106,10 +97,10 @@ export default {
         if (data[0].faceSet) {
           this.faceSet = "已开启";
         } else {
-          this.faceSet = "未设置";
+          this.faceSet = "";
         }
       } else {
-        const data = await NetRequest.post("getTenantInfo", { id: userId });
+        const data = await NetRequest.post("getEmployeeInfo", { id: userId });
         this.name = data[0].name;
         this.sex = data[0].sex;
         window.sessionStorage.setItem("userSex", this.sex);
@@ -118,7 +109,7 @@ export default {
         if (data[0].faceSet) {
           this.faceSet = "已开启";
         } else {
-          this.faceSet = "未设置";
+          this.faceSet = "";
         }
       }
     }
